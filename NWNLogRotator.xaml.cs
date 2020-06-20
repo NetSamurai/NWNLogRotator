@@ -528,7 +528,7 @@ namespace NWNLogRotator
                 }
                 if (_settings.ServerAddress != "")
                 {
-                    theLaunchParameters += "+connect " + _settings.ServerAddress;
+                    theLaunchParameters += " +connect " + _settings.ServerAddress;
                     if (_settings.ServerPassword != "")
                     {
                         theLaunchParameters += " +password " + _settings.ServerPassword;

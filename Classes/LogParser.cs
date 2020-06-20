@@ -51,13 +51,19 @@ namespace NWNLogRotator.Classes
                 else
                     text = reader.ReadToEnd();
             }
+
             foreach (var exp in gloabalRemoves)
+                text = text.Replace(exp, "");
+
+            // Garbage needs original formatting to be recognized; e.g. in Arelith's case.
+            foreach (var exp in garbageLines)
+                text = exp.Replace(text, "");
+
+            foreach (var exp in gloabalRemovesTwo)
                 text = text.Replace(exp, "");
 
             char[] newRow = { '\n' };
             string[] textAsList = text.Split(newRow);
-
-            removeExps.AddRange(garbageLines);
 
             if (removeCombat) removeExps.AddRange(combatLines);
 
@@ -99,9 +105,9 @@ namespace NWNLogRotator.Classes
         }
         public bool LineCount_Get(string ParsedNWNLog, int MinimumRowsCount)
         {
-            Match LineCount = Regex.Match(ParsedNWNLog, @"<br />");
+            MatchCollection LineCount = Regex.Matches(ParsedNWNLog, @"\<br\s\/>");
 
-            if (LineCount.Length >= MinimumRowsCount)
+            if (LineCount.Count >= MinimumRowsCount)
             {
                 return true;
             }
@@ -188,7 +194,7 @@ namespace NWNLogRotator.Classes
 
         private List<Tuple<Regex, string>> formatReplacesOrderedOne = new List<Tuple<Regex, string>>
         {
-            new Tuple<Regex, string> ( new Regex(@"\[{1}[A-z]{3}\s[A-z]{3}\s[0-9]{2}\s", RegexOptions.Compiled), "<span class='timestamp'>[" ),
+            new Tuple<Regex, string> ( new Regex(@"\[\w{3}\s\w{3}\s*?\d{1,}\s", RegexOptions.Compiled), "<span class='timestamp'>[" ),
             new Tuple<Regex, string> ( new Regex(@"\:{1}[0-9]*]{1}",RegexOptions.Compiled), "]</span>" ),
             // actors
             new Tuple<Regex, string>( new Regex(@"\]<\/span>((...).*: )",RegexOptions.Compiled), "]</span><span class='actors'>$1</span>" ),
@@ -207,6 +213,10 @@ namespace NWNLogRotator.Classes
         private List<String> gloabalRemoves = new List<String>
         {
             "\r",
+        };
+
+        private List<String> gloabalRemovesTwo = new List<String>
+        {
             "[CHAT WINDOW TEXT] ",
         };
 
@@ -244,14 +254,19 @@ namespace NWNLogRotator.Classes
             "Modifying colours doesn't cost gold.",
             "Ignore the crafting roll and gold message for robes.",
             "[NB: this lootbag will be deleted in 2 minutes!]",
+            "Unknown Update sub-message",
+            "You have multiple items equipped or spell effects active that give an Armor AC bonus and the effects will not stack.",
+            "Top Down Camera Activated",
+            "Driving Camera Activated",
         };
 
+        private static string lineStartMatch = @"(?<=\n|^)";
+        private static string lineChatStartMatch = @"\[CHAT\sWINDOW\sTEXT\]\s";
         private static string timestampMatch = @"^.+?(?=.*)";
-        private static string timestampExactMatch = @"\[\w{3}\s\w{3}\s\d{2}\s\d{2}\:\d{2}:\d\d\]\s";
+        private static string timestampExactMatch = @"\[\w{3}\s\w{3}\s*?\d{1,}\s\d{2}\:\d{2}\:\d{2}\]\s";
         private static string timestampStatefulMatch = @"\<span\sclass\=\'timestamp\'\>\[\d+\:\d+\]\<\/span\>\s*?(\<span\sclass\=\'actors\'\>\s)?";
         private static string nameMatch = @"[A-z0-9\s\.\']+";
         private static string nameStatefulMatch = @"[A-z0-9\s\.\']+\:\s\<\/span\>";
-
 
         private List<Regex> combatLines = new List<Regex>
         {
@@ -301,15 +316,15 @@ namespace NWNLogRotator.Classes
 
         private List<Regex> garbageLines = new List<Regex>
         {
-            new Regex(@"^\[?" + nameMatch + @"\]?\s?.*?\:\s\[(?:Talk|Shout|Whisper|Tell)\]\s.*$", RegexOptions.Compiled),
-            new Regex(@"^"+ timestampExactMatch + @"\[(?:Talk|Shout|Whisper|Tell)\]\s.*$", RegexOptions.Compiled),
-            new Regex(@"^nwsync\:\s?Storage\s?at\s?[0-9:A-z\,= ]{10,}$", RegexOptions.Compiled),
-            new Regex(@"^nwsync\:\s?Migrations\s?currently\s?applied\:\s?\d{1,}$", RegexOptions.Compiled),
-            new Regex(@"^nwsync\:\s?Shard\s?\d{1,}\s?available,\sSpace\sUsed\:\s?\d{1,}\sKB$", RegexOptions.Compiled),
-            new Regex(@"^Game\s?is\s?using\s?local\s?port\:\s?\d{1,}$", RegexOptions.Compiled),
-            new Regex(@"^Error\:\s?\d{1,}$", RegexOptions.Compiled),
-            new Regex(@"^GOG\:\s?Authentication\s?failed\:\s?\d{1,}$", RegexOptions.Compiled),
-            new Regex(timestampMatch+@"Script\s.*,\sOID\:.*,\sTag\:\s.*,\sERROR\:\sTOO MANY INSTRUCTIONS$", RegexOptions.Compiled),
+            new Regex(lineStartMatch+nameMatch+@"\:\s\[(?:Talk|Shout|Whisper|Tell)\]\s.*?\n", RegexOptions.Compiled),
+            new Regex(lineStartMatch+@"\[(?!CHAT)"+nameMatch+@"\]?\s?.*?\:\s\[(?:Talk|Shout|Whisper|Tell)\]\s.*?\n", RegexOptions.Compiled),
+            new Regex(lineStartMatch+lineChatStartMatch+timestampExactMatch+@"\[(?:Talk|Shout|Whisper|Tell)\]\s.*?\n", RegexOptions.Compiled),
+            new Regex(lineStartMatch+lineChatStartMatch+timestampExactMatch+@"(Progression\sby\sroleplay\.\.\.|Experience gained\.)\n", RegexOptions.Compiled),
+            new Regex(lineStartMatch+lineChatStartMatch+timestampExactMatch+@"Script\s.*?\,\sOID\:\s[A-z\d]+\,\sTag\:\s.*?\,\sERROR\:\sTOO\sMANY\sINSTRUCTIONS\n", RegexOptions.Compiled),
+            new Regex(lineStartMatch+@"nwsync\:\s(reconfigured|Migrations|Shard|Storage).*?\n"),
+            new Regex(lineStartMatch+@"Game\s?is\s?using\s?local\s?port\:\s.*?\n"),
+            new Regex(lineStartMatch+@"GOG\:\s?(Authentication|Error).*?\n"),
+            new Regex(lineStartMatch+@"Error\:\s\d+\n"),
         };
 
         private List<Regex> craftingLines = new List<Regex>

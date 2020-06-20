@@ -1,14 +1,14 @@
 # NWNLogRotator
 Transforms and parses any Neverwinter Nights chat log into beautiful HTML. Written in C# .NET. NWNLogRotator is both Enhanced Edition and 1.69 compatible. <a href="http://htmlpreview.github.io/?https://github.com/notsigma/NWN-Log-Rotator/blob/master/output/NWNLogExample.html">Click here</a> for an example of a parsed log.
 
-# Screenshot
-![Screenshot of NWNLogRotator would be here](https://raw.githubusercontent.com/notsigma/NWNLogRotator/master/Assets/Images/screenshot_nwnlr1.png)
-
 # Download
 Latest version can be found <a href="https://github.com/notsigma/NWNLogRotator/releases/latest">here</a>.
 
+# Screenshot
+![Screenshot of NWNLogRotator would be here](https://raw.githubusercontent.com/notsigma/NWNLogRotator/master/Assets/Images/screenshot_nwnlr1.png)
+
 # Automation (How it works)
-While open, NWNLogRotator will try to process new logs automatically based on the status of whether Neverwinter Nights is running. If your directories are configured to match with your Neverwinter Nights default log storage, it will process them automatically.
+While open, NWNLogRotator will process new logs automatically based on the status of whether Neverwinter Nights is running. Configure the directories to match with your Neverwinter Nights default log storage, and it will process them automatically.
 
 # Configuration Examples
 Important: Open Windows Explorer and enter %HOMEPATH%, and the last directory there is your _USER_.
@@ -28,10 +28,9 @@ Important: Open Windows Explorer and enter %HOMEPATH%, and the last directory th
 | Filter Lines | foo,bar | Any line that has the word foo or bar will be removed |
 | Auto Start | True,False | True will launch client on NWNLogRotator start |
 | Auto Close | True,False | True will close client on Log creation |
+| Theme | Dark, Light | Click on title, 'NWNLogRotator' to change Theme |
 
-# Notes
+# Other Notes
 1) This application may warn you that the publisher is not signed or verified, but if you click 'More Info' it will allow you to run anyways.
 2) Make sure you save your configuration settings or some options may not do what you expected!
 3) Make sure you have logging enabled if you cannot find a log file. The setting to enable logging is located in nwnplayer.ini as ClientEntireChatWindowLogging = 1 under [Game Options].
-4) The parsing will not be accurate if obtained from a third-party server that alters the standard NWN logging.
-5) Changing the theme is available by clicking the "NWNLogRotator" header.

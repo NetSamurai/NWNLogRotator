@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NWNLogRotator", "NWNLogRotator.csproj", "{F3ACD202-B191-4626-B2B4-8542919112E9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D98DC973-2DBA-4410-913A-025F23AF107B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,4 +28,3 @@ Global
 		SolutionGuid = {335CC3FD-EE53-4A9B-9124-A16F7F74EF8C}
 	EndGlobalSection
 EndGlobal
- 
